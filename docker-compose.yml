@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  backend:
+    build:
+      context: ./app-blog
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app-blog:/app
+    command: npm start
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: mongodb://mongo:27017/blogs
+      JWT_SECRET: V3ry$ecr3tKey!987
+      ecr3tKey: ${ecr3tKey}
+
+  frontend:
+    build:
+      context: ./design-blog
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./design-blog:/app
+    command: npm start
+    environment:
+      NODE_ENV: development
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
