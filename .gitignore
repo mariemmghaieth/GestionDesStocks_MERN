@@ -41,3 +41,9 @@ Thumbs.db
 
 # Git-specific
 *.orig
+
+# Do not exclude Jenkins, Docker, and Kubernetes files
+!.dockerignore
+!docker-compose.yml
+!Jenkinsfile
+!k8s/
