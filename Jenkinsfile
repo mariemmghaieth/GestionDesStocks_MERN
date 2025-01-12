@@ -2,33 +2,39 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'dockerhub-cred'  // Docker Hub credentials ID
-        DOCKERHUB_REPO_BACKEND = 'mariemmgh/gestiondesstocks-backend'
-        DOCKERHUB_REPO_FRONTEND = 'mariemmgh/gestiondesstocks-frontend'
+        BACKEND_IMAGE = 'mariemmgh/gestiondesstocks-backend:latest'
+        FRONTEND_IMAGE = 'mariemmgh/gestiondesstocks-frontend:latest'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-cred'
+        DOCKER_CONTEXT = 'default' // Explicitly specify the Docker context
     }
 
     stages {
-        stage('Build Backend Image') {
+        stage('Checkout') {
             steps {
-                sh 'docker build -t $DOCKERHUB_REPO_BACKEND:latest ./backend'
+                git branch: 'main', url: 'https://github.com/mariemmghaieth/GestionDesStocks_MERN.git', credentialsId: 'github-cred'
             }
         }
-        stage('Push Backend Image') {
+
+        stage('Build Docker Images') {
             steps {
-                withDockerRegistry(credentialsId: "$DOCKER_CREDENTIALS_ID", url: '') {
-                    sh 'docker push $DOCKERHUB_REPO_BACKEND:latest'
+                script {
+                    // Building the backend and frontend images
+                    sh 'docker build -t $BACKEND_IMAGE backend/'
+                    sh 'docker build -t $FRONTEND_IMAGE frontend/'
                 }
             }
         }
-        stage('Build Frontend Image') {
+
+        stage('Push Docker Images') {
             steps {
-                sh 'docker build -t $DOCKERHUB_REPO_FRONTEND:latest ./frontend'
-            }
-        }
-        stage('Push Frontend Image') {
-            steps {
-                withDockerRegistry(credentialsId: "$DOCKER_CREDENTIALS_ID", url: '') {
-                    sh 'docker push $DOCKERHUB_REPO_FRONTEND:latest'
+                script {
+                    withEnv(["DOCKER_CONTEXT=${env.DOCKER_CONTEXT}"]) {
+                        // Using credentials to push images to Docker Hub
+                        withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
+                            sh 'docker push $BACKEND_IMAGE'
+                            sh 'docker push $FRONTEND_IMAGE'
+                        }
+                    }
                 }
             }
         }
