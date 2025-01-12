@@ -1,0 +1,33 @@
+stages:
+  - build
+  - test
+  - deploy
+
+# Build stage
+build:
+  stage: build
+  script:
+    - echo "Building Docker image"
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+  tags:
+    - docker
+
+# Test stage
+test:
+  stage: test
+  script:
+    - echo "Running tests"
+    - docker run --rm $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA npm test
+  tags:
+    - docker
+
+# Deploy stage
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying to Kubernetes"
+    - kubectl apply -f k8s/deployment.yaml
+  only:
+    - main
+  tags:
+    - kubernetes
