@@ -1,16 +1,15 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
 
     environment {
         BACKEND_IMAGE = 'mariemmgh/gestiondesstocks-backend:latest'
         FRONTEND_IMAGE = 'mariemmgh/gestiondesstocks-frontend:latest'
         DOCKER_CREDENTIALS_ID = 'dockerhub-cred'
-        DOCKER_CONTEXT = 'default' // Explicitly specify the Docker context
+        DOCKER_CONTEXT = 'default'
+    }
+
+    tools {
+        docker 'docker'  // Referring to the global Docker tool setup
     }
 
     stages {
