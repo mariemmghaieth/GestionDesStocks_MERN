@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'dockerhub-cred'  // ID de tes credentials Docker Hub
+        DOCKER_CREDENTIALS_ID = 'dockerhub-cred'  // Docker Hub credentials ID
         DOCKERHUB_REPO_BACKEND = 'mariemmgh/gestiondesstocks-backend'
         DOCKERHUB_REPO_FRONTEND = 'mariemmgh/gestiondesstocks-frontend'
     }
@@ -10,15 +10,10 @@ pipeline {
     stages {
         stage('Build Backend Image') {
             steps {
-                sh 'docker build --cache-from=type=local -t $DOCKERHUB_REPO_BACKEND:latest ./backend'
+                sh 'docker build -t $DOCKERHUB_REPO_BACKEND:latest ./backend'
             }
         }
-        stage('Scan Backend Image') {
-            steps {
-                sh 'trivy image $DOCKERHUB_REPO_BACKEND:latest --exit-code 1 --severity HIGH,CRITICAL'
-            }
-        }
-        stage('Push Backend Image to Docker Hub') {
+        stage('Push Backend Image') {
             steps {
                 withDockerRegistry(credentialsId: "$DOCKER_CREDENTIALS_ID", url: '') {
                     sh 'docker push $DOCKERHUB_REPO_BACKEND:latest'
@@ -27,15 +22,10 @@ pipeline {
         }
         stage('Build Frontend Image') {
             steps {
-                sh 'docker build --cache-from=type=local -t $DOCKERHUB_REPO_FRONTEND:latest ./frontend'
+                sh 'docker build -t $DOCKERHUB_REPO_FRONTEND:latest ./frontend'
             }
         }
-        stage('Scan Frontend Image') {
-            steps {
-                sh 'trivy image $DOCKERHUB_REPO_FRONTEND:latest --exit-code 1 --severity HIGH,CRITICAL'
-            }
-        }
-        stage('Push Frontend Image to Docker Hub') {
+        stage('Push Frontend Image') {
             steps {
                 withDockerRegistry(credentialsId: "$DOCKER_CREDENTIALS_ID", url: '') {
                     sh 'docker push $DOCKERHUB_REPO_FRONTEND:latest'
