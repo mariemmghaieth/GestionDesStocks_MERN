@@ -23,8 +23,8 @@ pipeline {
             steps {
                 script {
                     // Building the backend and frontend images
-                    sh 'docker build -t $BACKEND_IMAGE backend/'
-                    sh 'docker build -t $FRONTEND_IMAGE frontend/'
+                    sh 'docker build -t $BACKEND_IMAGE app-blog/'
+                    sh 'docker build -t $FRONTEND_IMAGE design-blog/'
                 }
             }
         }
