@@ -23,8 +23,8 @@ pipeline {
             steps {
                 script {
                     // Building the backend and frontend images
-                    sh 'docker build -t $BACKEND_IMAGE app-blog/'
-                    sh 'docker build -t $FRONTEND_IMAGE design-blog/'
+                    bat 'docker build -t $BACKEND_IMAGE app-blog\\'
+                    bat 'docker build -t $FRONTEND_IMAGE design-blog\\'
                 }
             }
         }
@@ -35,8 +35,8 @@ pipeline {
                     withEnv(["DOCKER_CONTEXT=${env.DOCKER_CONTEXT}"]) {
                         // Using credentials to push images to Docker Hub
                         withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID, url: 'https://index.docker.io/v1/']) {
-                            sh 'docker push $BACKEND_IMAGE'
-                            sh 'docker push $FRONTEND_IMAGE'
+                            bat 'docker push $BACKEND_IMAGE'
+                            bat 'docker push $FRONTEND_IMAGE'
                         }
                     }
                 }
