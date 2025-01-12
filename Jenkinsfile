@@ -9,7 +9,7 @@ pipeline {
     }
 
     tools {
-        docker 'docker'  // Referring to the global Docker tool setup
+        dockerTool 'docker'  // Referring to the global Docker tool setup
     }
 
     stages {
